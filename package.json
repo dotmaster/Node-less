@@ -1,0 +1,22 @@
+{
+   "name": "node-less",
+   "description": "A node based less parser, can be used as command line compiler or from your node projects",
+   "tags": [
+       "less",
+       "node"
+   ],
+   "version": "0.1.0",
+   "author": "dotmaster <isimpl@gmail.com>",
+   "repository": {
+       "type": "git",
+       "url": "http://github.com/dotmaster/node-less.git"
+   },
+   "bugs": "http://github.com/dotmaster/node-less/issues",
+   "engines": [
+       "node >= 0.3.0"
+   ],
+   "main": "node-less.js",
+   "dependencies": {
+       "less": ">="       
+    }
+}
