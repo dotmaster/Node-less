@@ -1,37 +1,20 @@
+(function() {
 var less = require('less'),
     path = require('path'),
       fs = require('fs'),
      sys = require('sys');
 var exports;
-//if started from commandline filenames must be called .less.css
-var command=process.ARGV[1];
-var lastPath=path.basename(command);
-if (typeof lastPath != "undefined" && lastPath!=null && typeof lastPath=="string"){
-  if (lastPath=="node-less.js"){ //called from command line
-    console.log("[INFO] node-less called from command line");
-    exports.cl=true;  
-    //get the arguments and call handle
-    var arguments=process.ARGV.slice(2);//slice away the first two parameters, the rest are arguments
-    if (arguments.length==0){console.log("[ERROR] Please provide at least one file to parse");return;}
-    arguments.forEach(function(argument){
-      //do some checking her
-      if (path.extname(argument)!==".less"){
-        console.log("[ERROR] The filename should end with .less or .less.css");
-        return;
-      }
-    });
-    handle(arguments);
-  }else{
-    console.log("[INFO] node-less called as Module")
-    exports.cl=false;    
-  }
-}
-exports.handle = handle;
-function handle (inputArr, options, callback) { //takes a filename Array, some options and a clallback
+// Establish the root object,`global` on the server.
+var root = this;
+// Create a safe reference to the nodeless object for use below.
+var NodeLess=function (options) {
+  this.cl=options.cl;
+};
+NodeLess.prototype.handle = function (inputArr, options, callback) { //takes a filename Array, some options and a clallback
   //callback (parsed css output Array)
   
   options = options || {};
-  var cl=exports.cl;
+  var cl=this.cl;
   var outputArr=[];
   function respondError(msg) {
     if(cl){
@@ -108,3 +91,35 @@ function handle (inputArr, options, callback) { //takes a filename Array, some o
     throw Error("callbacks are not supported for Command line use. This shouldn't happen!");
   }
 }
+
+// Export the nodeless object for **CommonJS**.
+if (typeof exports !== 'undefined') exports.NodeLess = NodeLess;
+// Export Underscore to the global scope.
+root.NodeLess = NodeLess;
+// Current version.
+NodeLess.VERSION = '0.0.1';
+
+//if started from commandline filenames must be called .less.css
+var command=process.ARGV[1];
+var lastPath=path.basename(command);
+if (typeof lastPath != "undefined" && lastPath!=null && typeof lastPath=="string"){
+  if (lastPath=="node-less.js"){ //called from command line
+    console.log("[INFO] node-less called from command line");
+   var cl=true;  
+    //get the arguments and call handle
+    var arguments=process.ARGV.slice(2);//slice away the first two parameters, the rest are arguments
+    if (arguments.length==0){console.log("[ERROR] Please provide at least one file to parse");return;}
+    arguments.forEach(function(argument){
+      //do some checking her
+      if (path.extname(argument)!==".less"){
+        console.log("[ERROR] The filename should end with .less or .less.css");
+        return;
+      }
+    });
+    var lessParser= new NodeLess({cl:cl}).handle(arguments);
+  }else{
+    console.log("[INFO] node-less called as Module")
+    exports.cl=false;    
+  }
+}
+})();
