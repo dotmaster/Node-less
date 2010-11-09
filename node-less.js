@@ -1,7 +1,7 @@
 /*
  * Node-Less Node Parser CommonJS Module 0.1
  *
- * Simplified BSD License
+ * Simplified BSD License (@see License)
  * @author        Gregor Schwab
  * @copyright     (c) 2010 Gregor Schwab
  * Usage Command Line: node node-less file1.less file2.less ...
