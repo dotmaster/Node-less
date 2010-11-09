@@ -140,7 +140,7 @@ root.NodeLess = NodeLess;
 // Current version.
 NodeLess.VERSION = '0.0.1';
 
-//if started from commandline filenames must be called .less.css
+//if started from commandline filenames must be called .less and will be outpu as .less.css
 var command=process.ARGV[1];
 var lastPath=path.basename(command);
 if (typeof lastPath != "undefined" && lastPath!=null && typeof lastPath=="string"){
