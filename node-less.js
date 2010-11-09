@@ -1,3 +1,14 @@
+/*
+ * Node-Less Node Parser CommonJS Module 0.1
+ *
+ * Simplified BSD License
+ * @author        Gregor Schwab
+ * @copyright     (c) 2010 Gregor Schwab
+ * Usage Command Line: node node-less file1.less file2.less ...
+ * Output Command Line: file1.less.css file2.less.css
+ * Usage as Module: require(node-less); new NodeLess().handle(inputArr, options, callback);
+ */
+
 (function() {
 var less = require('less'),
     path = require('path'),
@@ -7,12 +18,41 @@ var exports;
 // Establish the root object,`global` on the server.
 var root = this;
 // Create a safe reference to the nodeless object for use below.
+/**
+ * Nodeless class.
+ * @param {Object} options (optional) currently just if called from commandline cl=true
+ * @constructor
+ */
 var NodeLess=function (options) {
-  this.cl=options.cl;
+  if (options && typeof options!=="object"){throw Error("NodeLess constructor options is not an Object");}
+  this.cl=options.cl||false;
 };
-NodeLess.prototype.handle = function (inputArr, options, callback) { //takes a filename Array, some options and a clallback
+
+/**
+ * Call this function to parse less files
+ * @param {Array} inputArr Array of filepath strings pointing to the .less files
+ * @param {Object} options (optional) of options (not used at the moment)
+ * @param {function} callback(css) (optional) a callback to return the parsed css back (only when used as a Module)
+ * @throws Error if wrong argument types are given
+ */
+ 
+NodeLess.prototype.parse = function (inputArr, options, callback) { //takes a filename Array, some options and a clallback
   //callback (parsed css output Array)
-  
+  processArguments(arguments);
+  function   processArguments(arguments){
+    var args=Array.prototype.slice.call(arguments);
+//    console.log(Array.isArray(args))
+    if (args.length===0){throw Error("[Exception] no Arguments specified to function parse, you must at least specify one Argument");}
+    if (!Array.isArray(args[0])|| args[0].length===0){throw Error("[Exception] first Argument must be a non empty Array of pathnames");}
+    //check first parameter
+    args[0].forEach(function(arg){
+      if (path.extname(arg)!==".less"){throw Error("[Exception] The filename should end with .less");}
+    });
+    //check (optional) second parameter
+    if(args[1]&&typeof args[1]!=="object"){throw Error("[Exception] 2nd parameter must be an Object");}
+    //check (optional) third parameter
+    if(args[2]&&typeof args[2]!=="function"){throw Error("[Exception] 3rd parameter must be a function");}  
+  }
   options = options || {};
   var cl=this.cl;
   var outputArr=[];
@@ -26,7 +66,7 @@ NodeLess.prototype.handle = function (inputArr, options, callback) { //takes a f
   
   inputArr.forEach(function(input, index, inputArr){
     outputArr[index]={};
-    inputArr[index]=input=input.replace(/\.css$/, ""); //if the file name is .less.css make it .less
+    //inputArr[index]=input=input.replace(/\.css$/, ""); //if the file name is .less.css make it .less
     fs.stat(input, function (e, stats) {
       if (e) {
         respondError("File Not Found "+e);
@@ -106,17 +146,17 @@ if (typeof lastPath != "undefined" && lastPath!=null && typeof lastPath=="string
   if (lastPath=="node-less.js"){ //called from command line
     console.log("[INFO] node-less called from command line");
    var cl=true;  
-    //get the arguments and call handle
+    //get the arguments and call parse
     var arguments=process.ARGV.slice(2);//slice away the first two parameters, the rest are arguments
     if (arguments.length==0){console.log("[ERROR] Please provide at least one file to parse");return;}
     arguments.forEach(function(argument){
       //do some checking her
       if (path.extname(argument)!==".less"){
-        console.log("[ERROR] The filename should end with .less or .less.css");
+        console.log("[ERROR] The filename shall end with .less by our convention");
         return;
       }
     });
-    var lessParser= new NodeLess({cl:cl}).handle(arguments);
+    var lessParser= new NodeLess({cl:cl}).parse(arguments);
   }else{
     console.log("[INFO] node-less called as Module")
     exports.cl=false;    
