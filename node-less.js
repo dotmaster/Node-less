@@ -7,6 +7,7 @@
  * Usage Command Line: node node-less file1.less file2.less ...
  * Output Command Line: file1.less.css file2.less.css
  * Usage as Module: require(node-less); new NodeLess().parse(inputArr, options, callback);
+ * @requires less
  */
 
 (function() {
