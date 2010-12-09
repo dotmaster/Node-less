@@ -87,6 +87,7 @@ NodeLess.prototype.parse = function (inputArr, options, callback) { //takes a fi
                 //response.end(css);
               } catch (e) {
                 respondError(e)
+                throw e;
               }
             }
           });
